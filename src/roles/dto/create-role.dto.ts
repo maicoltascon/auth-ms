@@ -36,4 +36,7 @@ export class CreateRoleDto {
 
   @ApiProperty({ example: false, description: 'Indica si el rol hereda permisos' })
   isInheritPermissions: boolean;
+
+  @ApiProperty({ example: false, description: 'Indica los permisos del rol' })
+  permissions: Object[];
 }

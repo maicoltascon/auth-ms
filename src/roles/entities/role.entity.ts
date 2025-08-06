@@ -1,6 +1,26 @@
 import { Schema, model, Document } from 'mongoose';
 
 
+
+interface Permission  {
+  name: string;
+  description: string;
+  action: string; // `create`, `read`, `update`, `delete`, etc.
+  resource: string; // `usuarios`, `posts`, `comentarios`, etc.
+  resourceId?: string; // Opcional, si aplica al recurso específico
+  type: string; // `global` o `role-based`
+  rol?: Rol; // Relación con el Rol
+  created: Date;
+  modified: Date;
+  dateCreated?: String;
+  hourCreated?: String;
+  dateModified?: String;
+  hourModified?: String;
+  idUserModified?: String;
+  isActive: boolean;
+}
+
+
 export interface Rol extends Document {
   name: string;
   codeRol: string;
@@ -14,6 +34,7 @@ export interface Rol extends Document {
   hourModified?: String;
   idUserModified?: string;
   isInheritPermissions: boolean;
+  permissions: Permission[]
 }
 
 export const RolSchema = new Schema({
@@ -29,6 +50,14 @@ export const RolSchema = new Schema({
     idUserModified: { type: Schema.Types.ObjectId, ref: 'User' },
     isActive: { type: Boolean, default: true },
     isInheritPermissions: { type: Boolean, default: false },
+    permissions: [{
+      _id: { type: Schema.Types.ObjectId, ref: 'Permission' },
+      name: { type: String, default: ''},
+      description: { type: String, default: ''},
+      action: { type: String,  default: true },
+      isActive: { type: Boolean, default: true },
+    }],
 });
+
 
 export const RolModel = model<Rol>('Rol', RolSchema);

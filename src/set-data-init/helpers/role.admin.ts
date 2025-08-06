@@ -7,6 +7,7 @@ export const ROLES = [
     modiefied: new Date(),
     isActive: true,
     isInheritPermissions: false,
+    
   },
   {
     name: 'Usuario Básico',
@@ -16,6 +17,7 @@ export const ROLES = [
     modiefied: new Date(),
     isActive: true,
     isInheritPermissions: true,
+  
   },
   {
     name: 'Auditor',
@@ -25,6 +27,7 @@ export const ROLES = [
     modiefied: new Date(),
     isActive: true,
     isInheritPermissions: false,
+
   },
 ];
 

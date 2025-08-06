@@ -8,6 +8,8 @@ import { User } from 'src/users/entities/user.entity';
 import { PERMISSIONS } from 'src/set-data-init/helpers/permissions.admin';
 import { ROLES } from 'src/set-data-init/helpers/role.admin';
 import { ADMIN_USER } from './helpers/user.admin';
+import Module from 'module';
+import { ADMIN_MODULE } from './helpers/modules.admin';
 
 @Injectable()
 export class SetDataInit implements OnApplicationBootstrap {
@@ -18,16 +20,50 @@ export class SetDataInit implements OnApplicationBootstrap {
     @InjectModel('Permission')
     private readonly permissionsModel: Model<Permission>,
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Module') private readonly moduleModel: Model<Module>,
   ) {}
+
+  async createInitModules() {
+    try {
+      await this.moduleModel.insertMany(ADMIN_MODULE, { ordered: false });
+      this.logger.log('Modules initialized successfully');
+    } catch (error) {
+      if (error.code === 11000) {
+        this.logger.warn('Some modules already exist, skipping duplicates');
+      } else {
+        throw error;
+      }
+    }
+  }
 
   async createInitRoles() {
     try {
-      await this.rolModel.insertMany(ROLES, { ordered: false });
+      // Obtén todos los permisos de la base de datos
+      const permissions = await this.permissionsModel.find().exec();
+      // Para cada rol en ROLES crea un nuevo documento con el arreglo de IDs de permisos
+      for (const role of ROLES) {
+        // Crea un nuevo objeto rol pasando las propiedades del rol y asignando permisos solo con _id
+        const newRole = new this.rolModel({
+          ...role,
+          permissions: permissions.map((permission) => ({
+            _id: permission._id,
+            name: permission.name,
+            description: permission.description,
+            action: permission.action,
+            isActive: permission.isActive,
+            // cualquier otro campo relevante según el esquema
+          })),
+        });
+        // Guarda el nuevo rol en la base de datos
+        await newRole.save();
+      }
+
       this.logger.log('Roles initialized successfully');
     } catch (error) {
       if (error.code === 11000) {
         this.logger.warn('Some roles already exist, skipping duplicates');
       } else {
+        this.logger.error('Error initializing roles', error);
         throw error;
       }
     }
@@ -46,24 +82,30 @@ export class SetDataInit implements OnApplicationBootstrap {
     }
   }
 
-  async createAdminUser() {
-    try {
-      const permissions = await this.permissionsModel.find().exec();
-      const roles = await this.rolModel.find().exec();
-
+ async createAdminUsers() {
+  try {
+    const modules = await this.moduleModel.find().exec();
+    const permissions = await this.permissionsModel.find().exec();
+    const roles = await this.rolModel.find().exec();
+    // Prepara subdocumentos para módulos y permisos que serán iguales para todos los admins
+    // Recorrer cada administrador en ADMIN_USER y crear documento en DB con los subdocumentos
+    for (const adminUser of ADMIN_USER) {
       const admin = new this.userModel({
-        ...ADMIN_USER,
-        roles: roles.map((role) => role._id), // Extraer solo los ObjectId
-        permissions: permissions.map((permission) => permission._id), // Extraer solo los ObjectId
+        ...adminUser,
+        modules: modules,
+        roles: roles,
+        permissions: permissions,
       });
 
       await admin.save();
-      this.logger.log('Admin user created successfully.');
-
-    } catch (error) {
-      this.logger.error('Error creating admin user', error);
+      this.logger.log(`Admin user ${adminUser.email || adminUser.username} created successfully.`);
     }
+  } catch (error) {
+    this.logger.error('Error creating admin users', error);
+    throw error;
   }
+}
+
 
   async onApplicationBootstrap() {
     await this.validateIfDataExists();
@@ -71,24 +113,28 @@ export class SetDataInit implements OnApplicationBootstrap {
 
   async validateIfDataExists() {
     try {
+      const moduleCount = await this.moduleModel.countDocuments().exec();
       const rolCount = await this.rolModel.countDocuments().exec();
       const permissionsCount = await this.permissionsModel
         .countDocuments()
         .exec();
       const userCount = await this.userModel.countDocuments().exec();
-      if (rolCount === 0) {
-        this.logger.warn('No roles found, creating an data admin...');
-        await this.createInitRoles();
-      }
 
+      if (moduleCount === 0) {
+        this.logger.warn('No modules found, creating an admin module...');
+        await this.createInitModules();
+      }
       if (permissionsCount === 0) {
         this.logger.warn('No permissions found, creating an data admin...');
         await this.createInitPermissions();
       }
-
+      if (rolCount === 0) {
+        this.logger.warn('No roles found, creating an data admin...');
+        await this.createInitRoles();
+      }
       if (userCount === 0) {
         this.logger.warn('No users found, creating an admin user...');
-        await this.createAdminUser();
+        await this.createAdminUsers();
       }
     } catch (error) {
       this.logger.error('Error validating if data exists', error);

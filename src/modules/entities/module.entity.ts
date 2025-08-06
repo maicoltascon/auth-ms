@@ -1,6 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import { Permission } from 'src/permissions/entities/permission.entity';
-import { Rol } from 'src/roles/entities/role.entity';
+
 
 export interface Module extends Document {
     name: string;
@@ -14,8 +13,6 @@ export interface Module extends Document {
     idUserModified?: String;
     isActive: boolean;
     isSystemModule: boolean;
-    permissions?: Permission[];
-    roles?: Rol[];
 }
 
 export const ModuleSchema = new Schema({
@@ -30,8 +27,6 @@ export const ModuleSchema = new Schema({
     idUserModified: { type: Schema.Types.ObjectId, ref: 'User' },
     isActive: { type: Boolean, default: true },
     isSystemModule: { type: Boolean, default: false },
-    permissions: [{ type: Schema.Types.ObjectId, ref: 'Permission', default: [], required: false }],
-    roles: [{ type: Schema.Types.ObjectId, ref: 'Rol', default: [], required: false }],
 });
 
 export const ModuleModel = model<Module>('Module', ModuleSchema);
