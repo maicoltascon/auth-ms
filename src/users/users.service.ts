@@ -1,41 +1,165 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-
-
 @Injectable()
-export class UsersService  {
+export class UsersService {
+  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  constructor(
-    @InjectModel('User') private readonly userModel: Model<User>,
-  ) {}
-
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const newUser = new this.userModel(createUserDto);
+    const result = await newUser.save();
+    if (!result) {
+      throw new NotFoundException('User not created');
+    }
+    return {
+      message: 'User created successfully',
+      statusCode: 201,
+      status: 'Success',
+      data: result,
+      meta: {
+        totalData: 1,
+        createdAt: new Date().toISOString(),
+        id: result._id,
+      },
+    };
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
-  findByPagination() {
-    return `This action returns users paginated by pagination`;
+  async findAll() {
+    const users = await this.userModel.find().exec();
+    if (!users || users.length === 0) {
+      throw new NotFoundException('No users found');
+    }
+    return {
+      message: 'Users retrieved successfully',
+      statusCode: 200,
+      status: 'Success',
+      data: users,
+      meta: {
+        totalData: users.length,
+      },
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  // Paginación simple: ?page=1&limit=10 (puedes mejorarla con DTO o query params en el controller)
+  async findByPagination(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [users, totalData] = await Promise.all([
+      this.userModel.find().skip(skip).limit(limit).exec(),
+      this.userModel.countDocuments(),
+    ]);
+
+    return {
+      message: 'Paginated users retrieved successfully',
+      statusCode: 200,
+      status: 'Success',
+      data: users,
+      meta: {
+        totalData,
+        page,
+        limit,
+      },
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  // Búsqueda simple por ID
+  async findOne(id: string) {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return {
+      message: 'User retrieved successfully',
+      statusCode: 200,
+      status: 'Success',
+      data: user,
+      meta: {
+        totalData: 1,
+      },
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  // Si quieres filtrar por fecha de creación, ajusta el DTO y lógica aquí
+  async findByDate(startDate: string, endDate: string) {
+    // Validación simple de fechas
+    if (!startDate || !endDate) {
+      throw new NotFoundException(
+        'You must provide both startDate and endDate',
+      );
+    }
+
+    // Convierte las fechas a objetos Date
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Ajusta si quieres incluir el final completo del día (opcional)
+    end.setHours(23, 59, 59, 999);
+
+    // Busca por rango de fechas en createdAt
+    const users = await this.userModel
+      .find({
+        createdAt: {
+          $gte: start,
+          $lte: end,
+        },
+      })
+      .exec();
+
+    if (!users || users.length === 0) {
+      throw new NotFoundException('No users found for given date range');
+    }
+
+    return {
+      message: 'Users retrieved by date range successfully',
+      statusCode: 200,
+      status: 'Success',
+      data: users,
+      meta: {
+        totalData: users.length,
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+      },
+    };
   }
-  
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .exec();
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return {
+      message: 'User updated successfully',
+      statusCode: 200,
+      status: 'Success',
+      data: updatedUser,
+      meta: {
+        totalData: 1,
+        updatedAt: new Date().toISOString(),
+        id: updatedUser._id,
+      },
+    };
+  }
+
+  async remove(id: string) {
+    const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
+    if (!deletedUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return {
+      message: 'User deleted successfully',
+      statusCode: 200,
+      status: 'Success',
+      data: deletedUser,
+      meta: {
+        totalData: 1,
+        deletedAt: new Date().toISOString(),
+        id: deletedUser._id,
+      },
+    };
+  }
 }

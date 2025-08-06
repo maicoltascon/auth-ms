@@ -1,10 +1,11 @@
 import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { UserSchema } from 'src/users/entities/user.entity';
+import { ConfigService } from '@nestjs/config';
 import { RolSchema } from 'src/roles/entities/role.entity';
 import { PermissionSchema } from 'src/permissions/entities/permission.entity';
-import { ConfigService } from '@nestjs/config';
+import { UserSchema } from 'src/users/entities/user.entity';
+import { ModuleSchema } from 'src/modules/entities/module.entity';
 
 @Global()
 @Module({
@@ -19,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
       { name: 'User', schema: UserSchema },
       { name: 'Rol', schema: RolSchema },
       { name: 'Permission', schema: PermissionSchema },
+      { name: 'Module', schema: ModuleSchema },
     ]),
   ],
   exports: [MongooseModule]

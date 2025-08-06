@@ -8,11 +8,11 @@ export interface Rol extends Document {
   created: Date;
   modiefied: Date;
   isActive: boolean;
-  dateCreated: String;
-  hourCreated: String;
-  dateModified: String;
-  hourModified: String;
-  idUserModified: string;
+  dateCreated?: String;
+  hourCreated?: String;
+  dateModified?: String;
+  hourModified?: String;
+  idUserModified?: string;
   isInheritPermissions: boolean;
 }
 
@@ -22,11 +22,11 @@ export const RolSchema = new Schema({
     description: { type: String, required: [true, 'The description field is required'] },
     created: { type: Date, default: Date.now },
     modified: { type: Date },
-    dateCreated: { type: String },
-    hourCreated: { type: String },
-    dateModified: { type: String },
-    hourModified: { type: String },
-    idUserModified: { type: String },
+    dateCreated: { type: String, default: new Date().toISOString().split('T')[0] },
+    hourCreated: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+    dateModified: { type: String, default: new Date().toISOString().split('T')[0] },
+    hourModified: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+    idUserModified: { type: Schema.Types.ObjectId, ref: 'User' },
     isActive: { type: Boolean, default: true },
     isInheritPermissions: { type: Boolean, default: false },
 });

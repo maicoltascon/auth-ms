@@ -1,20 +1,36 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class Login {
-    email: string;
-    password: string;
+  @ApiProperty({ example: 'usuario@example.com', description: 'Correo electrónico del usuario' })
+  email: string;
+
+  @ApiProperty({ example: 'password123', description: 'Contraseña del usuario' })
+  password: string;
 }
 
 export class Register {
-    name: string;
-    lastName: string;
-    email: string;
-    password: string;
+  @ApiProperty({ example: 'Juan', description: 'Nombre del usuario' })
+  name: string;
+
+  @ApiProperty({ example: 'Pérez', description: 'Apellido del usuario' })
+  lastName: string;
+
+  @ApiProperty({ example: 'usuario@example.com', description: 'Correo electrónico del usuario' })
+  email: string;
+
+  @ApiProperty({ example: 'password123', description: 'Contraseña para registro' })
+  password: string;
 }
 
 export class ChangePassword {
-    oldPassword: string;
-    newPassword: string;
+  @ApiProperty({ example: 'oldPassword123', description: 'Contraseña actual' })
+  oldPassword: string;
+
+  @ApiProperty({ example: 'newPassword456', description: 'Nueva contraseña' })
+  newPassword: string;
 }
 
 export class RecoveryPassword {
-    email: string;
+  @ApiProperty({ example: 'usuario@example.com', description: 'Correo electrónico para recuperación de contraseña' })
+  email: string;
 }

@@ -15,6 +15,11 @@ export interface Session extends Document {
     istable: boolean;
     ismovil: boolean;
     isbrowser:boolean;
+    dateCreated?: string;
+    hourCreated?: string;
+    dateModified?: string;
+    hourModified?: string;
+    idUserModified?: string;
 };
 
 // Define schema for session id x 
@@ -32,6 +37,11 @@ const SessionSchema = new Schema({
     istable: { type: Boolean },
     ismovil: { type: Boolean },
     isbrowser: { type: Boolean },
+    dateCreated: { type: String, default: new Date().toISOString().split('T')[0] },
+    hourCreated: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+    dateModified: { type: String, default: new Date().toISOString().split('T')[0] },
+    hourModified: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+    idUserModified: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 export const SessionModel = model<Session>('sessions', SessionSchema);

@@ -11,11 +11,11 @@ export interface Permission extends Document {
   rol?: Rol; // Relación con el Rol
   created: Date;
   modified: Date;
-  dateCreated: String;
-  hourCreated: String;
-  dateModified: String;
-  hourModified: String;
-  idUserModified: String;
+  dateCreated?: String;
+  hourCreated?: String;
+  dateModified?: String;
+  hourModified?: String;
+  idUserModified?: String;
   isActive: boolean;
 }
 
@@ -29,12 +29,12 @@ export const PermissionSchema = new Schema({
   rol: { type: Schema.Types.ObjectId, ref: 'Rol' },
   created: { type: Date, default: Date.now },
   modified: { type: Date, default: Date.now },
-  dateCreated: { type: String },
-  hourCreated: { type: String },
-  dateModified: { type: String },
-  hourModified: { type: String },
-  idUserModified: { type: String },
+  dateCreated: { type: String, default: new Date().toISOString().split('T')[0] },
+  hourCreated: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+  dateModified: { type: String, default: new Date().toISOString().split('T')[0] },
+  hourModified: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+  idUserModified: { type: Schema.Types.ObjectId, ref: 'User' },
   isActive: { type: Boolean, default: true },
 });
 
-export const PermissionModel = model<Permission>('premissions', PermissionSchema);
+export const PermissionModel = model<Permission>('permissions', PermissionSchema);
