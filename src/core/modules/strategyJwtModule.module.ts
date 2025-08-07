@@ -23,4 +23,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [JwtStrategy],
   exports: [PassportModule, JwtModule, JwtStrategy],
 })
-export class StrategyGlobalModule {}
+export class StrategyJwtGlobalModule {}
