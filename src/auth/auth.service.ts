@@ -49,7 +49,6 @@ export class AuthService {
             message: 'Login successful',
             statusCode: 200,
             status: 'Success',
-            //data: payloadUser,
             meta: {
                 payload,
                 totalData: 1,

@@ -21,10 +21,26 @@ async function bootstrap() {
 
   // Swagger/OpenAPI Configuración
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Documentación API')
-    .setDescription('Documentación automática de la API con Swagger y NestJS')
-    .setVersion('1.0')
-    .build();
+  .setTitle('API Híbrida con REST y Microservicios TCP')
+  .setVersion('1.0')
+  .setDescription(
+    `Esta es una aplicación híbrida desarrollada con NestJS que combina:
+
+- **API REST:**  
+  Expone endpoints HTTP documentados con Swagger para operaciones estándar accesibles por clientes externos, navegadores o herramientas REST.
+
+- **Microservicios TCP:**  
+  Utiliza comunicación interna mediante patrones de mensajes TCP para integrar microservicios de manera eficiente y escalable.  
+  Estos microservicios no se exponen vía HTTP y no pueden ser consumidos directamente a través de Swagger UI.
+
+La documentación Swagger incluye:  
+- La descripción y ejemplos completos para todos los endpoints REST.  
+- Documentación especial (a través de endpoints de solo lectura) que describe los patrones y payloads TCP disponibles para microservicios, como referencia para desarrolladores e integradores.
+
+Este enfoque permite un diseño modular, escalable y flexible, aprovechando lo mejor de los APIs REST para consumo público y microservicios TCP para comunicación interna.`
+  )
+  .build();
+
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, document); // http://localhost:PORT/api-docs

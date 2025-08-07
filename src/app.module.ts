@@ -13,6 +13,7 @@ import { ModulesModule } from './modules/modules.module';
 import { SetDataInitModule } from './set-data-init/set-data-init.module';
 import { DatabaseModule } from './core/database/database.module';
 import { SessionsModule } from './sessions/sessions.module';
+import { StrategyGlobalModule } from './core/modules/strategyModule.module';
 
 
 
@@ -22,6 +23,7 @@ import { SessionsModule } from './sessions/sessions.module';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'], // Hace que ConfigService esté disponible globalmente
     }),
+    StrategyGlobalModule,
     DatabaseModule,
     SetDataInitModule,
     UsersModule,

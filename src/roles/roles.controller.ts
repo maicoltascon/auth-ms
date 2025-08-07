@@ -1,17 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('roles')
 @Controller('roles')
+@UseGuards(AuthGuard('jwt'))
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   // Endpoints HTTP REST
-@Post()
+  @Post()
   @ApiOperation({ summary: 'Crear un rol' })
   @ApiResponse({
     status: 201,
@@ -21,15 +39,17 @@ export class RolesController {
         message: 'Role created successfully',
         statusCode: 201,
         status: 'Success',
-        data: { /* objeto rol creado */ },
+        data: {
+          /* objeto rol creado */
+        },
         meta: {
           totalData: 1,
           createdAt: '2025-08-06T12:00:00.000Z',
           updatedAt: '2025-08-06T12:00:00.000Z',
-          id: 'id-del-rol'
-        }
-      }
-    }
+          id: 'id-del-rol',
+        },
+      },
+    },
   })
   @ApiBody({ type: CreateRoleDto })
   create(@Body() createRoleDto: CreateRoleDto) {
@@ -46,10 +66,12 @@ export class RolesController {
         message: 'Roles retrieved successfully',
         statusCode: 200,
         status: 'Success',
-        data: [ /* array de roles */ ],
-        meta: { totalData: 5 }
-      }
-    }
+        data: [
+          /* array de roles */
+        ],
+        meta: { totalData: 5 },
+      },
+    },
   })
   findAll() {
     return this.rolesService.findAll();
@@ -66,10 +88,12 @@ export class RolesController {
         message: 'Role retrieved successfully',
         statusCode: 200,
         status: 'Success',
-        data: { /* objeto rol */ },
-        meta: { totalData: 1 }
-      }
-    }
+        data: {
+          /* objeto rol */
+        },
+        meta: { totalData: 1 },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'Rol no encontrado' })
   findOne(@Param('id') id: string) {
@@ -88,14 +112,16 @@ export class RolesController {
         message: 'Role updated successfully',
         statusCode: 200,
         status: 'Success',
-        data: { /* objeto rol actualizado */ },
+        data: {
+          /* objeto rol actualizado */
+        },
         meta: {
           totalData: 1,
           updatedAt: '2025-08-06T12:30:00.000Z',
-          id: 'id-del-rol'
-        }
-      }
-    }
+          id: 'id-del-rol',
+        },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'Rol no encontrado' })
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
@@ -113,20 +139,21 @@ export class RolesController {
         message: 'Role deleted successfully',
         statusCode: 200,
         status: 'Success',
-        data: { /* objeto rol eliminado */ },
+        data: {
+          /* objeto rol eliminado */
+        },
         meta: {
           totalData: 1,
           deletedAt: '2025-08-06T13:00:00.000Z',
-          id: 'id-del-rol'
-        }
-      }
-    }
+          id: 'id-del-rol',
+        },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'Rol no encontrado' })
   remove(@Param('id') id: string) {
     return this.rolesService.remove(id);
   }
-
 
   // Métodos para microservicio con MessagePattern
 
@@ -153,5 +180,145 @@ export class RolesController {
   @MessagePattern({ cmd: 'removeRole' })
   msRemove(@Payload() id: string) {
     return this.rolesService.remove(id);
+  }
+
+  @Post('tcp-docs/message-patterns')
+  @ApiOperation({
+    summary: '[SOLO DOCUMENTACIÓN] Patrones TCP soportados por RolesService',
+    description: `
+Este endpoint EXCLUSIVAMENTE documenta los comandos TCP soportados por el microservicio para integración entre servicios.  
+**No enviar datos reales aquí; la comunicación real es por sockets TCP.**
+
+Usa el decorador @MessagePattern en NestJS, ejemplo:
+\`@MessagePattern({ cmd: 'createRole' })\`
+  `,
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Documentación de patrones TCP disponible en este microservicio',
+    schema: {
+      example: {
+        message: 'Comandos TCP disponibles en roles',
+        patterns: [
+          {
+            command: 'createRole',
+            description:
+              'Crea un rol. Payload: CreateRoleDto. Devuelve objeto de creación.',
+            payloadExample: {
+              name: 'Administrador',
+              description: 'Rol con todos los permisos',
+              // ...otros campos relevantes de CreateRoleDto
+              isActive: true,
+              created: '2025-08-06T12:00:00Z',
+            },
+            responseExample: {
+              message: 'Role created successfully',
+              statusCode: 201,
+              status: 'Success',
+              data: {
+                /* objeto rol creado */
+              },
+              meta: { totalData: 1, createdAt: '2025-08-06T12:00:00Z' },
+            },
+          },
+          {
+            command: 'findAllRoles',
+            description: 'Trae todos los roles. Payload: ninguno.',
+            responseExample: {
+              message: 'find all roles',
+              statusCode: 200,
+              status: 'Success',
+              data: [
+                /* ...array de roles... */
+              ],
+              meta: { totalData: 5 },
+            },
+          },
+          {
+            command: 'findOneRole',
+            description: 'Busca un rol por ID. Payload: id:string.',
+            payloadExample: { id: 'id-rol' },
+          },
+          {
+            command: 'updateRole',
+            description:
+              'Actualiza un rol. Payload: { id: string, updateRoleDto: UpdateRoleDto }.',
+            payloadExample: {
+              id: 'id',
+              updateRoleDto: {
+                /* ...campos de actualización... */
+              },
+            },
+          },
+          {
+            command: 'removeRole',
+            description: 'Elimina un rol. Payload: id:string.',
+            payloadExample: { id: 'id-rol' },
+          },
+        ],
+      },
+    },
+  })
+  tcpPatternsDoc() {
+    return {
+      message: 'Comandos TCP disponibles en roles',
+      patterns: [
+        {
+          command: 'createRole',
+          description:
+            'Crea un rol. Payload: CreateRoleDto. Devuelve objeto de creación.',
+          payloadExample: {
+            name: 'Administrador',
+            description: 'Rol con todos los permisos',
+            isActive: true,
+            created: '2025-08-06T12:00:00Z',
+          },
+          responseExample: {
+            message: 'Role created successfully',
+            statusCode: 201,
+            status: 'Success',
+            data: {
+              /* ...estructura del rol creado... */
+            },
+            meta: { totalData: 1, createdAt: '2025-08-06T12:00:00Z' },
+          },
+        },
+        {
+          command: 'findAllRoles',
+          description: 'Trae todos los roles. Payload: ninguno.',
+          responseExample: {
+            message: 'find all roles',
+            statusCode: 200,
+            status: 'Success',
+            data: [
+              /* ...array de roles... */
+            ],
+            meta: { totalData: 5 },
+          },
+        },
+        {
+          command: 'findOneRole',
+          description: 'Busca un rol por ID. Payload: id:string.',
+          payloadExample: { id: 'id-rol' },
+        },
+        {
+          command: 'updateRole',
+          description:
+            'Actualiza un rol. Payload: { id: string, updateRoleDto: UpdateRoleDto }.',
+          payloadExample: {
+            id: 'id',
+            updateRoleDto: {
+              /* ...campos de actualización... */
+            },
+          },
+        },
+        {
+          command: 'removeRole',
+          description: 'Elimina un rol. Payload: id:string.',
+          payloadExample: { id: 'id-rol' },
+        },
+      ],
+    };
   }
 }
