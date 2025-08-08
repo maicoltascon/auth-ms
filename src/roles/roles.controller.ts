@@ -19,10 +19,13 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { ValidateObjectIdGuard } from 'src/core/guards/validateObjectId.guard';
 
 @ApiTags('roles')
+@ApiBearerAuth()
 @Controller('roles')
 @UseGuards(AuthGuard('jwt'))
 export class RolesController {
@@ -78,6 +81,7 @@ export class RolesController {
   }
 
   @Get(':id')
+  @UseGuards(ValidateObjectIdGuard)
   @ApiOperation({ summary: 'Obtener un rol por ID' })
   @ApiParam({ name: 'id', description: 'ID del rol' })
   @ApiResponse({
@@ -101,6 +105,7 @@ export class RolesController {
   }
 
   @Put(':id')
+  @UseGuards(ValidateObjectIdGuard)
   @ApiOperation({ summary: 'Actualizar un rol por ID' })
   @ApiParam({ name: 'id', description: 'ID del rol a actualizar' })
   @ApiBody({ type: UpdateRoleDto })
@@ -129,6 +134,7 @@ export class RolesController {
   }
 
   @Delete(':id')
+  @UseGuards(ValidateObjectIdGuard)
   @ApiOperation({ summary: 'Eliminar un rol por ID' })
   @ApiParam({ name: 'id', description: 'ID del rol a eliminar' })
   @ApiResponse({

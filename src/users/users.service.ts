@@ -67,6 +67,8 @@ export class UsersService {
 
   // Búsqueda simple por ID
   async findOne(id: string) {
+    console.log(`Finding user with ID: ${id}`);
+    
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

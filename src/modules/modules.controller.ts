@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ModulesService } from './modules.service';
@@ -19,11 +21,15 @@ import {
   ApiParam,
   ApiBody,
   ApiExtraModels,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { UserPayload } from 'src/core/interfaces/user-payload.interface';
+import { ValidateObjectIdGuard } from 'src/core/guards/validateObjectId.guard';
 
 @ApiTags('modules')
 @ApiExtraModels(CreateModuleDto, UpdateModuleDto)
+@ApiBearerAuth()
 @Controller('modules')
 @UseGuards(AuthGuard('jwt'))
 export class ModulesController {
@@ -53,7 +59,12 @@ export class ModulesController {
       },
     },
   })
-  create(@Body() createModuleDto: CreateModuleDto) {
+  
+  create(@Body() createModuleDto: CreateModuleDto, @Req() req: any) {
+     const user = req.user as UserPayload;
+    if(!user.isAdmin){
+      throw new UnauthorizedException('User is not admin');
+    }
     return this.modulesService.create(createModuleDto);
   }
 
@@ -75,7 +86,11 @@ export class ModulesController {
       },
     },
   })
-  findAll() {
+  findAll(@Req() req: any) {
+    const user = req.user as UserPayload;
+    if(!user.isAdmin){
+      throw new UnauthorizedException('User is not admin');
+    }
     return this.modulesService.findAll();
   }
 
@@ -102,6 +117,7 @@ export class ModulesController {
     status: 404,
     description: 'Módulo no encontrado',
   })
+  @UseGuards(ValidateObjectIdGuard)
   findOne(@Param('id') id: string) {
     return this.modulesService.findOne(id);
   }
@@ -134,6 +150,7 @@ export class ModulesController {
     status: 404,
     description: 'Módulo no encontrado',
   })
+  @UseGuards(ValidateObjectIdGuard)
   update(@Param('id') id: string, @Body() updateModuleDto: UpdateModuleDto) {
     return this.modulesService.update(id, updateModuleDto);
   }
@@ -165,6 +182,7 @@ export class ModulesController {
     status: 404,
     description: 'Módulo no encontrado',
   })
+  @UseGuards(ValidateObjectIdGuard)
   remove(@Param('id') id: string) {
     return this.modulesService.remove(id);
   }

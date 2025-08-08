@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/core/interfaces/jwt-payload.interface';
 
+
 @Injectable()
 export class AuthService {
     constructor(
@@ -57,6 +58,7 @@ export class AuthService {
         }
         
     }
+
 
     private getJwtToken(payload: JwtPayload) {
         const token = this.jwtService.sign(payload);

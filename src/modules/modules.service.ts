@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Module } from './entities/module.entity';
+
 
 @Injectable()
 export class ModulesService {
@@ -35,10 +36,8 @@ export class ModulesService {
     };
   }
 
-  async findAll() {
-    const modules = await this.moduleModel.find().exec();
-    console.log('module', modules);
-    
+  async findAll() {    
+    const modules = await this.moduleModel.find().exec();    
     if (!modules) {
       throw new NotFoundException('No modules found');
     }

@@ -39,6 +39,12 @@ La documentación Swagger incluye:
 
 Este enfoque permite un diseño modular, escalable y flexible, aprovechando lo mejor de los APIs REST para consumo público y microservicios TCP para comunicación interna.`
   )
+  .addBearerAuth({
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT',
+    description: 'Ingrese el token JWT en formato Bearer',
+  })
   .build();
 
 

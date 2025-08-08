@@ -8,6 +8,7 @@ export class AuthorizationService {
    * @param user Usuario completo de la DB
    * @param action Acción a validar: 'create', 'read', etc.
    */
+
   canPerformAction(user: User, action: string): boolean {
     if (!user || !user.roles || user.roles.length === 0) return false;
 
@@ -39,4 +40,5 @@ export class AuthorizationService {
     // Si llega aquí, no tiene permisos suficientes
     return false;
   }
+
 }

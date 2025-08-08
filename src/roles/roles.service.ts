@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Rol } from './entities/role.entity';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class RolesService {
@@ -11,6 +12,7 @@ export class RolesService {
   constructor(@InjectModel('Rol') private readonly rolModel: Model<Rol>) {}
 
   async create(createRoleDto: CreateRoleDto) {
+  try {
     const newRole = new this.rolModel(createRoleDto);
     const result = await newRole.save();
 
@@ -28,9 +30,17 @@ export class RolesService {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         id: result._id,
-      }
+      },
     };
+  } catch (error) {
+    if (error.code === 11000) {
+      // Código de error MongoDB para clave duplicada
+      throw new BadRequestException('Duplicate key error: Role already exists');
+    }
+    // Para cualquier otro error, se lanza de nuevo para que se gestione globalmente
+    throw error;
   }
+}
 
   async findAll() {
     const roles = await this.rolModel.find().exec();
@@ -65,10 +75,15 @@ export class RolesService {
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
-    const updatedRole = await this.rolModel.findByIdAndUpdate(id, updateRoleDto, { new: true }).exec();
+  try {
+    const updatedRole = await this.rolModel
+      .findByIdAndUpdate(id, updateRoleDto, { new: true })
+      .exec();
+
     if (!updatedRole) {
       throw new NotFoundException(`Role with ID ${id} not found`);
     }
+
     return {
       message: 'Role updated successfully',
       statusCode: 200,
@@ -78,9 +93,15 @@ export class RolesService {
         totalData: 1,
         updatedAt: new Date().toISOString(),
         id: updatedRole._id,
-      }
+      },
     };
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new BadRequestException('Duplicate key error: Role with given data already exists');
+    }
+    throw error;
   }
+}
 
   async remove(id: string) {
     const deletedRole = await this.rolModel.findByIdAndDelete(id).exec();

@@ -19,10 +19,13 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { ValidateObjectIdGuard } from 'src/core/guards/validateObjectId.guard';
 
 @ApiTags('permissions')
+@ApiBearerAuth()
 @Controller('permissions')
 @UseGuards(AuthGuard('jwt'))
 export class PermissionsController {
@@ -79,6 +82,7 @@ export class PermissionsController {
   }
 
   @Get(':id')
+  
   @ApiOperation({ summary: 'Obtener un permiso por ID' })
   @ApiParam({ name: 'id', description: 'ID del permiso' })
   @ApiResponse({
@@ -100,6 +104,7 @@ export class PermissionsController {
     status: 404,
     description: 'Permiso no encontrado',
   })
+  @UseGuards(ValidateObjectIdGuard)
   findOne(@Param('id') id: string) {
     return this.permissionsService.findOne(id);
   }
@@ -131,6 +136,7 @@ export class PermissionsController {
     status: 404,
     description: 'Permiso no encontrado',
   })
+  @UseGuards(ValidateObjectIdGuard)
   update(
     @Param('id') id: string,
     @Body() updatePermissionDto: UpdatePermissionDto,
@@ -164,6 +170,7 @@ export class PermissionsController {
     status: 404,
     description: 'Permiso no encontrado',
   })
+  @UseGuards(ValidateObjectIdGuard)
   remove(@Param('id') id: string) {
     return this.permissionsService.remove(id);
   }

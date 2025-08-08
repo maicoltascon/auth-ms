@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users.service';
@@ -20,10 +21,13 @@ import {
   ApiParam,
   ApiBody,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { ValidateObjectIdGuard } from 'src/core/guards/validateObjectId.guard';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(AuthGuard('jwt'))
 export class UsersController {
@@ -117,6 +121,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @UseGuards(ValidateObjectIdGuard)
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiParam({ name: 'id', description: 'ID del usuario' })
   @ApiResponse({
@@ -179,7 +184,8 @@ export class UsersController {
     return this.usersService.findByDate(startDate, endDate);
   }
 
-  @Patch(':id')
+  @Put(':id')
+  @UseGuards(ValidateObjectIdGuard)
   @ApiOperation({ summary: 'Actualizar un usuario por ID' })
   @ApiParam({ name: 'id', description: 'ID del usuario a actualizar' })
   @ApiBody({ type: UpdateUserDto })
@@ -208,6 +214,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(ValidateObjectIdGuard)
   @ApiOperation({ summary: 'Eliminar un usuario por ID' })
   @ApiParam({ name: 'id', description: 'ID del usuario a eliminar' })
   @ApiResponse({
