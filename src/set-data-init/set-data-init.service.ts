@@ -85,6 +85,8 @@ export class SetDataInit implements OnApplicationBootstrap {
  async createAdminUsers() {
   try {
     const modules = await this.moduleModel.find().exec();
+    console.log(modules);
+    
     const permissions = await this.permissionsModel.find().exec();
     const roles = await this.rolModel.find().exec();
     // Prepara subdocumentos para módulos y permisos que serán iguales para todos los admins

@@ -20,13 +20,17 @@ export class AuthService {
         const userDB = await this.userModel.findOne({ email: login.email }).exec();
 
         if (!userDB) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException('Usuario no encontrado');
         }
 
         const isPasswordValid = await this.encryptionService.verifyPassword(login.password, userDB.password);
         
         if (!isPasswordValid) {
-            throw new UnauthorizedException('Invalid credentials');
+            throw new UnauthorizedException('Creadenciales invalidas');
+        }
+
+        if (!userDB.isActived) {
+            throw new UnauthorizedException('Usuario no activo, comuniquese con el administrador');
         }
 
         const payload = {

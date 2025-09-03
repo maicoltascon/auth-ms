@@ -24,6 +24,7 @@ export interface User extends Document {
   modules: Module[];
   roles: Rol[];
   permissions: Permission[];
+
 }
 
 export const UserSchema = new Schema({
@@ -88,6 +89,24 @@ export const UserSchema = new Schema({
       description: { type: String, default: '' },
       isActive: { type: Boolean, default: true },
       isSystemModule: { type: Boolean, default: false },
+      routes: [
+        {
+          name: { type: String, default: '' },
+          path: { type: String, default: '' },
+          initPath: { type: String },
+          icon: { type: String, default: '' },
+          isActive: { type: Boolean, default: true },
+          children: [
+            {
+              
+              name: { type: String, default: '' },
+              path: { type: String, default: '' },
+              icon: { type: String, default: '' },
+              isActive: { type: Boolean, default: true },
+            },
+          ],
+        },
+      ],
     },
   ],
   company: { type: String },

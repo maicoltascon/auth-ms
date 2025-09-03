@@ -49,4 +49,18 @@ export class CreateModuleDto {
     description: 'Roles asociados al módulo',
   })
   roles?: Rol[];
+
+  @ApiPropertyOptional({
+    type: () => Object,
+    isArray: true,
+    description: 'Rutas asociadas al módulo',
+  })
+  routes?: Route[];
+}
+
+export interface Route {
+  name: string;
+  path: string;
+  icon: string;
+  children?: Route[]; // Opcional, arreglo de rutas hijas
 }

@@ -8,6 +8,7 @@ import {
   Delete,
   Put,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { PermissionsService } from './permissions.service';
@@ -81,8 +82,36 @@ export class PermissionsController {
     return this.permissionsService.findAll();
   }
 
+  @Get('findByPage')
+  @ApiOperation({ summary: 'Obtener permisos por página' })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de permisos por página',
+    schema: {
+      example: {
+        message: 'find  permissions',
+        statusCode: 200,
+        status: 'Success',
+        data: [
+          /* array de permisos */
+        ],
+        meta: { totalData: 5 },
+      },
+    },
+  })
+  findByPage(
+    @Query('from') from?: number,
+    @Query('limite') limite?: number,
+    @Query('global') global?: string,
+    @Query('filters') filters?: string,
+  ) {
+    const fromNumber = from !== undefined ? Number(from) : 0;
+    const limiteNumber = limite !== undefined ? Number(limite) : 10;
+    return this.permissionsService.findByPage(fromNumber, limiteNumber, global, filters);
+  }
+
+
   @Get(':id')
-  
   @ApiOperation({ summary: 'Obtener un permiso por ID' })
   @ApiParam({ name: 'id', description: 'ID del permiso' })
   @ApiResponse({

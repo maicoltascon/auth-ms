@@ -1,5 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 import { Rol } from 'src/roles/entities/role.entity';
+import moment from 'moment';
 
 export interface Permission extends Document {
   name: string;
@@ -20,21 +21,22 @@ export interface Permission extends Document {
 }
 
 export const PermissionSchema = new Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   description: { type: String, required: true },
-  action: { type: String, required: true },
+  action: { type: String, required: true, unique: true },
   resource: { type: String, required: true },
   resourceId: { type: String },
   type: { type: String, required: true },
   rol: { type: Schema.Types.ObjectId, ref: 'Rol' },
   created: { type: Date, default: Date.now },
   modified: { type: Date, default: Date.now },
-  dateCreated: { type: String, default: new Date().toISOString().split('T')[0] },
-  hourCreated: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
-  dateModified: { type: String, default: new Date().toISOString().split('T')[0] },
-  hourModified: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+  dateCreated: { type: String, default: moment().format('YYYY-MM-DD') },
+  hourCreated: { type: String, default: moment().format('HH:mm:ss') },
+  dateModified: { type: String, default: moment().format('YYYY-MM-DD') },
+  hourModified: { type: String, default: moment().format('HH:mm:ss') },
   idUserModified: { type: Schema.Types.ObjectId, ref: 'User' },
   isActive: { type: Boolean, default: true },
+
 });
 
 export const PermissionModel = model<Permission>('permissions', PermissionSchema);
