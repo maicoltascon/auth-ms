@@ -8,6 +8,7 @@ import {
   Delete,
   Put,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RolesService } from './roles.service';
@@ -78,6 +79,40 @@ export class RolesController {
   })
   findAll() {
     return this.rolesService.findAll();
+  }
+
+  @Get('findByPage')
+  @ApiOperation({ summary: 'Obtener Roles por página' })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de Roles por página',
+    schema: {
+      example: {
+        message: 'find  Roles',
+        statusCode: 200,
+        status: 'Success',
+        data: [
+          /* array de permisos */
+        ],
+        meta: { totalData: 5 },
+      },
+    },
+  })
+  findByPage(
+    @Query('from') from?: number,
+    @Query('limit') limit?: number,
+    @Query('global') global?: string,
+    @Query('filters') filters?: string,
+  ) {
+    console.log(from, limit, global, filters);
+    const fromNumber = from !== undefined ? Number(from) : 0;
+    const limitNumber = limit !== undefined ? Number(limit) : 10;
+    return this.rolesService.findByPage(
+      fromNumber,
+      limitNumber,
+      global,
+      filters,
+    );
   }
 
   @Get(':id')

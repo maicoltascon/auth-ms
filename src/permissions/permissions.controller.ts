@@ -101,12 +101,13 @@ export class PermissionsController {
   })
   findByPage(
     @Query('from') from?: number,
-    @Query('limite') limite?: number,
+    @Query('limit') limit?: number,
     @Query('global') global?: string,
     @Query('filters') filters?: string,
   ) {
+    
     const fromNumber = from !== undefined ? Number(from) : 0;
-    const limiteNumber = limite !== undefined ? Number(limite) : 10;
+    const limiteNumber = limit !== undefined ? Number(limit) : 10;
     return this.permissionsService.findByPage(fromNumber, limiteNumber, global, filters);
   }
 

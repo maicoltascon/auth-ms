@@ -74,6 +74,37 @@ export class RolesService {
     };
   }
 
+  async findByPage(from?: number, limit?: number, global?: any, filters?: any) {
+    const query: any = {};
+    // Búsqueda global en varios campos
+    if (global) {
+      query.$or = [
+        { name: new RegExp(global, 'i') },
+        { action: new RegExp(global, 'i') },
+        //{ isActive: Boolean(global) },
+        { resource: new RegExp(global, 'i') },
+        { description: new RegExp(global, 'i') },
+      ];
+    }
+
+    const skipNumber = from && from >= 0 ? from : 0;
+    const limitNumber = limit && limit > 0 ? limit : 100;
+    const docs = await this.rolModel
+      .find(query)
+      .skip(skipNumber)
+      .limit(limitNumber);
+    const totalData = await this.rolModel.countDocuments(query);
+    return {
+      statusCode: 200,
+      status: 'Success',
+      message: 'Roles found',
+      data: docs,
+      meta: {
+        totalData: totalData,
+      },
+    };
+  }
+
   async update(id: string, updateRoleDto: UpdateRoleDto) {
   try {
     const updatedRole = await this.rolModel

@@ -67,18 +67,18 @@ export class PermissionsService {
   }
 
   async findByPage(from?: number, limit?: number, global?: any, filters?: any) {
+    console.log(from, limit, global, filters);
     const query: any = {};
     // Búsqueda global en varios campos
     if (global) {
       query.$or = [
         { name: new RegExp(global, 'i') },
         { action: new RegExp(global, 'i') },
-        { isActive: Boolean(global) },
+        //{ isActive: Boolean(global) },
         { resource: new RegExp(global, 'i') },
         { description: new RegExp(global, 'i') },
       ];
     }
-
     const skipNumber = from && from >= 0 ? from : 0;
     const limitNumber = limit && limit > 0 ? limit : 100;
     const docs = await this.permissionModel
@@ -86,6 +86,7 @@ export class PermissionsService {
       .skip(skipNumber)
       .limit(limitNumber);
     const totalData = await this.permissionModel.countDocuments(query);
+    
     return {
       statusCode: 200,
       status: 'Success',
