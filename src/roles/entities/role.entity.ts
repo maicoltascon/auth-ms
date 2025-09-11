@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+import moment from 'moment';
 
 
 
@@ -43,10 +44,10 @@ export const RolSchema = new Schema({
     description: { type: String, required: [true, 'The description field is required'] },
     created: { type: Date, default: Date.now },
     modified: { type: Date },
-    dateCreated: { type: String, default: new Date().toISOString().split('T')[0] },
-    hourCreated: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
-    dateModified: { type: String, default: new Date().toISOString().split('T')[0] },
-    hourModified: { type: String, default: new Date().toISOString().split('T')[1].split('.')[0] },
+    dateCreated: { type: String, default: moment().format('YYYY-MM-DD') },
+    hourCreated: { type: String, default: moment().format('HH:mm:ss') },
+    dateModified: { type: String, default: moment().format('YYYY-MM-DD') },
+    hourModified: { type: String, default: moment().format('HH:mm:ss') },
     idUserModified: { type: Schema.Types.ObjectId, ref: 'User' },
     isActive: { type: Boolean, default: true },
     isInheritPermissions: { type: Boolean, default: false },

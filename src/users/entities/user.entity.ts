@@ -24,7 +24,6 @@ export interface User extends Document {
   modules: Module[];
   roles: Rol[];
   permissions: Permission[];
-
 }
 
 export const UserSchema = new Schema({
@@ -114,6 +113,7 @@ export const UserSchema = new Schema({
   modified: { type: Date, default: Date.now },
   isActived: { type: Boolean, default: true },
   isAdmin: { type: Boolean, default: false }, // Assuming Role is a separate entity
+  isSuperAdmin: { type: Boolean, default: false }, // Assuming Role is a separate entity
   isNewUser: { type: Boolean, default: true },
   // Assuming Role is a separate entity
 });

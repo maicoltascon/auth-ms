@@ -28,7 +28,7 @@ export class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('Correo enviado:', info.messageId);
+
       return info;
     } catch (error) {
       console.error('Error enviando email:', error);

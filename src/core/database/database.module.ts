@@ -6,6 +6,7 @@ import { RolSchema } from 'src/roles/entities/role.entity';
 import { PermissionSchema } from 'src/permissions/entities/permission.entity';
 import { UserSchema } from 'src/users/entities/user.entity';
 import { ModuleSchema } from 'src/modules/entities/module.entity';
+import { CompanySchema } from 'src/companies/entities/company.entity';
 
 @Global()
 @Module({
@@ -21,6 +22,7 @@ import { ModuleSchema } from 'src/modules/entities/module.entity';
       { name: 'Rol', schema: RolSchema },
       { name: 'Permission', schema: PermissionSchema },
       { name: 'Module', schema: ModuleSchema },
+      { name: 'Company', schema: CompanySchema },
     ]),
   ],
   exports: [MongooseModule]

@@ -14,6 +14,7 @@ import { SetDataInitModule } from './set-data-init/set-data-init.module';
 import { DatabaseModule } from './core/database/database.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { StrategyJwtGlobalModule } from './core/modules/strategyJwtModule.module';
+import { CompaniesModule } from './companies/companies.module';
 
 
 
@@ -32,6 +33,7 @@ import { StrategyJwtGlobalModule } from './core/modules/strategyJwtModule.module
     PermissionsModule,
     ModulesModule,
     SessionsModule,
+    CompaniesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

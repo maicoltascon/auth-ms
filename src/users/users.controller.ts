@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
   UseGuards,
   Put,
+  Req,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users.service';
@@ -80,45 +80,44 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('pagination')
-  @ApiOperation({ summary: 'Obtener usuarios paginados' })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    type: Number,
-    description: 'Número de página',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    description: 'Usuarios por página',
-  })
+  @Get('findByPage')
+  @ApiOperation({ summary: 'Obtener Usuario por página' })
   @ApiResponse({
     status: 200,
-    description: 'Usuarios paginados',
+    description: 'Listado de Usuarios por página',
     schema: {
       example: {
-        message: 'Paginated users retrieved successfully',
+        message: 'find  Usuarios',
         statusCode: 200,
         status: 'Success',
         data: [
-          /* array de usuarios paginados */
+          /* array de permisos */
         ],
-        meta: {
-          totalData: 50,
-          page: 1,
-          limit: 10,
-        },
+        meta: { totalData: 5 },
       },
     },
   })
-  findByPagination(
-    @Query('page') page?: number,
+  findByPage(
+    @Req() req: any,
+    @Query('company') company?: string,
+    @Query('from') from?: number,
     @Query('limit') limit?: number,
+    @Query('global') global?: string,
+    @Query('filters') filters?: string,
+
   ) {
-    return this.usersService.findByPagination(page, limit);
+    const user = req.user
+    const fromNumber = from !== undefined ? Number(from) : 0;
+    const limiteNumber = limit !== undefined ? Number(limit) : 10;
+    return this.usersService.findByPage(
+      user,
+      fromNumber,
+      limiteNumber,
+      global,
+      filters,
+    );
   }
+
 
   @Get(':id')
   @UseGuards(ValidateObjectIdGuard)
@@ -144,7 +143,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Get('by-date')
+  @Get('findByDate')
   @ApiOperation({ summary: 'Obtener usuarios filtrados por rango de fecha' })
   @ApiQuery({
     name: 'startDate',

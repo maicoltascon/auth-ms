@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   UnauthorizedException,
+  Query,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ModulesService } from './modules.service';
@@ -93,6 +94,35 @@ export class ModulesController {
     }
     return this.modulesService.findAll();
   }
+
+   @Get('findByPage')
+    @ApiOperation({ summary: 'Obtener Módulos por página' })
+    @ApiResponse({
+      status: 200,
+      description: 'Listado de Módulos por página',
+      schema: {
+        example: {
+          message: 'find  modules',
+          statusCode: 200,
+          status: 'Success',
+          data: [
+            /* array de permisos */
+          ],
+          meta: { totalData: 5 },
+        },
+      },
+    })
+    findByPage(
+      @Query('from') from?: number,
+      @Query('limit') limit?: number,
+      @Query('global') global?: string,
+      @Query('filters') filters?: string,
+    ) {
+      
+      const fromNumber = from !== undefined ? Number(from) : 0;
+      const limiteNumber = limit !== undefined ? Number(limit) : 10;
+      return this.modulesService.findByPage(fromNumber, limiteNumber, global, filters);
+    }
 
 
   @Get(':id')

@@ -121,7 +121,6 @@ export class AuthController {
   @ApiBearerAuth()
   async validateUser(@Req() req: any) {
     const user = req.user as UserPayload;
-    console.log(user);
 
     return {
       user,

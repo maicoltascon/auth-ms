@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Module } from './entities/module.entity';
-
 
 @Injectable()
 export class ModulesService {
@@ -16,7 +19,7 @@ export class ModulesService {
   async create(createModuleDto: CreateModuleDto) {
     const module = new this.moduleModel(createModuleDto);
     const result = await module.save();
-    console.log('Created Module:', result);
+
 
     if (!result) {
       throw new NotFoundException('Module not created');
@@ -32,12 +35,12 @@ export class ModulesService {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         id: result._id,
-      }
+      },
     };
   }
 
-  async findAll() {    
-    const modules = await this.moduleModel.find().exec();    
+  async findAll() {
+    const modules = await this.moduleModel.find().exec();
     if (!modules) {
       throw new NotFoundException('No modules found');
     }
@@ -54,8 +57,8 @@ export class ModulesService {
   }
 
   async findOne(id: string) {
-    console.log(`Finding module with ID: ${id}`);
-    
+
+
     const module = await this.moduleModel.findById(id).exec();
     if (!module) {
       throw new NotFoundException(`Module with ID ${id} not found`);
@@ -71,12 +74,46 @@ export class ModulesService {
     };
   }
 
-   async update(id: string, updateModuleDto: UpdateModuleDto) {
-    const updatedModule = await this.moduleModel.findByIdAndUpdate(id, updateModuleDto, { new: true }).exec();
+  async findByPage(from?: number, limit?: number, global?: any, filters?: any) {
+
+    const query: any = {};
+    // Búsqueda global en varios campos
+    if (global) {
+      query.$or = [
+        { name: new RegExp(global, 'i') },
+        //{ action: new RegExp(global, 'i') },
+        //{ isActive: Boolean(global) },
+        // { resource: new RegExp(global, 'i') },
+        { description: new RegExp(global, 'i') },
+      ];
+    }
+    const skipNumber = from && from >= 0 ? from : 0;
+    const limitNumber = limit && limit > 0 ? limit : 100;
+    const docs = await this.moduleModel
+      .find(query)
+      .skip(skipNumber)
+      .limit(limitNumber);
+    const totalData = await this.moduleModel.countDocuments(query);
+
+    return {
+      statusCode: 200,
+      status: 'Success',
+      message: 'Modules found',
+      data: docs,
+      meta: {
+        totalData: totalData,
+      },
+    };
+  }
+
+  async update(id: string, updateModuleDto: UpdateModuleDto) {
+    const updatedModule = await this.moduleModel
+      .findByIdAndUpdate(id, updateModuleDto, { new: true })
+      .exec();
     if (!updatedModule) {
       throw new NotFoundException(`Module with ID ${id} not found`);
     }
-    console.log('Updated Module:', updatedModule);
+
     return {
       message: 'Module updated successfully',
       statusCode: 200,
@@ -86,7 +123,7 @@ export class ModulesService {
         totalData: 1,
         updatedAt: new Date().toISOString(),
         id: updatedModule._id,
-      }
+      },
     };
   }
 
@@ -95,7 +132,7 @@ export class ModulesService {
     if (!deletedModule) {
       throw new NotFoundException(`Module with ID ${id} not found`);
     }
-    console.log('Deleted Module:', deletedModule);
+
     return {
       message: 'Module deleted successfully',
       statusCode: 200,
@@ -105,7 +142,7 @@ export class ModulesService {
         totalData: 1,
         deletedAt: new Date().toISOString(),
         id: deletedModule._id,
-      }
+      },
     };
   }
 }

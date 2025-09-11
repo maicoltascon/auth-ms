@@ -10,6 +10,7 @@ export const ADMIN_USER = [{
     modified: new Date(),
     isActived: true,
     isAdmin: true,
+    isSuperAdmin: true,
     isNewUser: true,
     company: 'Company Admin',
     phone: '1234567890',

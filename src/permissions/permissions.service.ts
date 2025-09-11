@@ -49,7 +49,7 @@ export class PermissionsService {
   }
 
   async findAll() {
-    console.log('Finding all permissions');
+
 
     const permissions = await this.permissionModel.find().exec();
     if (!permissions) {
@@ -67,7 +67,7 @@ export class PermissionsService {
   }
 
   async findByPage(from?: number, limit?: number, global?: any, filters?: any) {
-    console.log(from, limit, global, filters);
+
     const query: any = {};
     // Búsqueda global en varios campos
     if (global) {

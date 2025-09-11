@@ -44,6 +44,63 @@ export class UsersService {
     };
   }
 
+  async findByPage(
+    user?: any,
+    from?: number,
+    limit?: number,
+    global?: any,
+    filters?: any,
+  ) {
+    const { isSuperAdmin } = user;
+
+    const query: any = {};
+
+    if (!isSuperAdmin) {
+      query.company = user.company;
+    }
+    // Búsqueda global en varios campos
+    if (global) {
+      const regex = new RegExp(global, 'i');
+      // Si es superadmin, busca global en todos los campos incluyendo compañía
+      if (isSuperAdmin) {
+        query.$or = [
+          { name: regex },
+          { lastName: regex },
+          { username: regex },
+          { email: regex },
+          { phone: regex },
+          { company: regex },
+        ];
+      } else {
+        // No superadmin: búsqueda global menos en compañía (porque ya filtra con company fija)
+        query.$or = [
+          { name: regex },
+          { lastName: regex },
+          { username: regex },
+          { email: regex },
+          { phone: regex },
+        ];
+      }
+    }
+    const skipNumber = from && from >= 0 ? from : 0;
+    const limitNumber = limit && limit > 0 ? limit : 100;
+    const docs = await this.userModel
+      .find(query)
+      .skip(skipNumber)
+      .limit(limitNumber);
+    const totalData = await this.userModel.countDocuments(query);
+
+    return {
+      statusCode: 200,
+      status: 'Success',
+      message: 'Modules found',
+      data: docs,
+      meta: {
+        totalData: totalData,
+      },
+    };
+  }
+
   // Paginación simple: ?page=1&limit=10 (puedes mejorarla con DTO o query params en el controller)
   async findByPagination(page = 1, limit = 10) {
     const skip = (page - 1) * limit;
@@ -67,8 +124,8 @@ export class UsersService {
 
   // Búsqueda simple por ID
   async findOne(id: string) {
-    console.log(`Finding user with ID: ${id}`);
-    
+
+
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
