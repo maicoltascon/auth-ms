@@ -7,7 +7,7 @@ export interface Company extends Document {
     modified: Date;
     name: string;
     legalRepresentative?: string;
-    ruc?: string;
+    rut?: string;
     address?: string;
     phone?: string;
     email?: string;
@@ -20,6 +20,7 @@ export interface Company extends Document {
     dateModified?: string;
     hourModified?: string;
     idUserModified?: string;
+
 };
 
 // Define schema for session id x 

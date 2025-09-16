@@ -69,37 +69,84 @@ export class CreateUserDto {
 }
 
 
-class Module {
-  
+export class Rol {
+  @ApiProperty({ example: 'Administrador', description: 'Nombre del rol' })
   name: string;
-  description: string;
-  created: Date;
-  modified: Date;
-  isActive: boolean;
-  isSystemModule: boolean;
-  permissions: Permission[];
-  roles: Rol[];
-}
 
-class Rol {
-  name: string;
+  @ApiProperty({ example: 'ADMIN', description: 'Código único del rol' })
   codeRol: string;
+
+  @ApiProperty({ example: 'Rol con permisos administrativos', description: 'Descripción del rol' })
   description: string;
+
+  @ApiProperty({ example: '2025-08-06T10:00:00Z', description: 'Fecha de creación' })
   created: Date;
+
+  @ApiProperty({ example: '2025-08-06T12:00:00Z', description: 'Fecha de última modificación' })
   modiefied: Date;
+
+  @ApiProperty({ example: true, description: 'Indica si el rol está activo' })
   isActive: boolean;
+
+  @ApiProperty({ example: false, description: 'Indica si el rol hereda permisos de otros roles' })
   isInheritPermissions: boolean;
 }
 
-class Permission {
+export class Permission {
+  @ApiProperty({ example: 'Crear usuario', description: 'Nombre del permiso' })
   name: string;
+
+  @ApiProperty({ example: 'Permite crear un nuevo usuario', description: 'Descripción del permiso' })
   description: string;
+
+  @ApiProperty({ example: 'create', description: 'Acción permitida (create, read, update, delete)' })
   action: string;
-  resource: string; 
-  resourceId?: string; 
-  type: string; 
-  rol?: Rol; 
+
+  @ApiProperty({ example: 'usuarios', description: 'Recurso al que aplica el permiso' })
+  resource: string;
+
+  @ApiPropertyOptional({ example: 'abc123', description: 'ID específico del recurso (opcional)' })
+  resourceId?: string;
+
+  @ApiProperty({ example: 'role-based', description: 'Tipo de permiso (global o role-based)' })
+  type: string;
+
+  @ApiPropertyOptional({ type: () => Rol, description: 'Rol asociado al permiso (opcional)' })
+  rol?: Rol;
+
+  @ApiProperty({ example: '2025-08-06T12:00:00Z', description: 'Fecha de creación' })
   created: Date;
+
+  @ApiProperty({ example: '2025-08-06T12:30:00Z', description: 'Fecha de última modificación' })
   modified: Date;
+
+  @ApiProperty({ example: true, description: 'Indica si el permiso está activo' })
   isActive: boolean;
 }
+
+export class Module {
+  @ApiProperty({ example: 'Módulo Usuarios', description: 'Nombre del módulo' })
+  name: string;
+
+  @ApiProperty({ example: 'Módulo para la gestión de usuarios', description: 'Descripción del módulo' })
+  description: string;
+
+  @ApiProperty({ example: '2025-08-06T09:00:00Z', description: 'Fecha de creación' })
+  created: Date;
+
+  @ApiProperty({ example: '2025-08-06T11:00:00Z', description: 'Fecha de última modificación' })
+  modified: Date;
+
+  @ApiProperty({ example: true, description: 'Indica si el módulo está activo' })
+  isActive: boolean;
+
+  @ApiProperty({ example: false, description: 'Indica si el módulo es parte del sistema base' })
+  isSystemModule: boolean;
+
+  @ApiProperty({ type: () => [Permission], description: 'Lista de permisos asociados al módulo' })
+  permissions: Permission[];
+
+  @ApiProperty({ type: () => [Rol], description: 'Lista de roles asociados al módulo' })
+  roles: Rol[];
+}
+
