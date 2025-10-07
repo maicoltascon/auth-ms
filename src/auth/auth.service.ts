@@ -92,7 +92,7 @@ export class AuthService {
         userDB.password,
       );
 
-      console.log(isPasswordValid);
+   
 
       if (!isPasswordValid) {
         return {
