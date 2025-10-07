@@ -15,6 +15,7 @@ import { DatabaseModule } from './core/database/database.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { StrategyJwtGlobalModule } from './core/modules/strategyJwtModule.module';
 import { CompaniesModule } from './companies/companies.module';
+import { MailModule } from './mail/mail.module';
 
 
 
@@ -34,8 +35,10 @@ import { CompaniesModule } from './companies/companies.module';
     ModulesModule,
     SessionsModule,
     CompaniesModule,
+    MailModule
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [MailModule],
 })
 export class AppModule {}

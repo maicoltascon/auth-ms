@@ -48,7 +48,7 @@ export const UserSchema = new Schema({
     match: [/.+@.+\..+/, 'Please enter a valid email'],
   },
   phone: { type: String, required: false, trim: true },
-  username: { type: String, unique: true, trim: false },
+  //username: { type: String, unique: true, },
   password: {
     type: String,
     required: [true, 'The password field is required'],
@@ -124,5 +124,6 @@ UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt); // Encripta la contraseña
   next();
 });
+
 
 export const UserModel = model<User>('User', UserSchema);

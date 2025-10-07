@@ -4,10 +4,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<User>, private readonly mailService: MailService) {}
 
   async create(createUserDto: CreateUserDto) {
     
@@ -16,6 +17,18 @@ export class UsersService {
     if (!result) {
       throw new NotFoundException('User not created');
     }
+
+   const info = await this.mailService.sendEmail({
+      to: result.email,
+      subject: 'Bienvenido a [Tu Plataforma]',
+      template: 'welcome', // nombre del archivo welcome.hbs
+      context: {
+        username: result.email,
+        password: createUserDto.password, // si tienes la contraseña original aquí (revisar seguridad)
+        login_url: 'https://tuplataforma.com/login', // url de login real de tu app
+      },
+      
+    });
     return {
       message: 'User created successfully',
       statusCode: 201,
@@ -25,6 +38,7 @@ export class UsersService {
         totalData: 1,
         createdAt: new Date().toISOString(),
         id: result._id,
+        info
       },
     };
   }
