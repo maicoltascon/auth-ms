@@ -23,8 +23,12 @@ export class Register {
 }
 
 export class ChangePassword {
+
+  @ApiProperty({ example: '1234567890abcdef', description: 'ID del usuario' })
+  id: string;
+
   @ApiProperty({ example: 'oldPassword123', description: 'Contraseña actual' })
-  oldPassword: string;
+  currentPassword: string;
 
   @ApiProperty({ example: 'newPassword456', description: 'Nueva contraseña' })
   newPassword: string;

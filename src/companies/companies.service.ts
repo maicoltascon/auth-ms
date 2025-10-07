@@ -83,7 +83,11 @@ export class CompaniesService {
     const skipNumber = from && from >= 0 ? from : 0;
     const limitNumber = limit && limit > 0 ? limit : 100;
 
-    const docs = await this.companyModel.find(query).skip(skipNumber).limit(limitNumber).exec();
+    const docs = await this.companyModel
+      .find(query)
+      .skip(skipNumber)
+      .limit(limitNumber)
+      .exec();
     const totalData = await this.companyModel.countDocuments(query);
 
     return {
@@ -95,6 +99,56 @@ export class CompaniesService {
         totalData,
       },
     };
+  }
+
+  async findByAutoComplete(word?: string) {
+    try {
+      if (!word) {
+        return {
+          message: 'No search word provided',
+          statusCode: 200,
+          status: 'Success',
+          data: [],
+          meta: {
+            totalData: 0,
+          },
+        };
+      }
+
+      const regex = new RegExp(word, 'i'); // Búsqueda insensible a mayúsculas/minúsculas
+      const result = await this.companyModel
+      .find({
+        isActive: true,
+        $or: [
+          { name: regex },
+          { legalRepresentative: regex },
+          { id: regex },
+          { address: regex },
+          { phone: regex },
+          { email: regex },
+          { web: regex },
+        ],
+      })
+      .limit(10) // Limitar cantidad para autocompletado
+      .sort({ _id: -1 }) // Similar al ejemplo orden descendente
+      .exec();
+
+      
+
+      return {
+        message: 'Companies found by autocomplete',
+        statusCode: 200,
+        status: 'Success',
+        data: result,
+        meta: {
+          totalData: result.length,
+        },
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        'Error in autocomplete search: ' + error.message,
+      );
+    }
   }
 
   async findOne(id: string) {

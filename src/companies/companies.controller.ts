@@ -110,6 +110,31 @@ export class CompaniesController {
     return this.companiesService.findByPage(fromNumber, limitNumber, global, filters);
   }
 
+  @Get('findByAutoComplete')
+  @ApiOperation({ summary: 'Obtener las compañías' })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de las compañías filtrando por nombre',
+    schema: {
+      example: {
+        message: 'find  companies',
+        statusCode: 200,
+        status: 'Success',
+        data: [
+          /* array de compañías */
+        ],
+        meta: { totalData: 5 },
+      },
+    },
+  })
+  findByAutoComplete(
+    @Query('name') name?: string,
+  ) {
+  
+    
+    return this.companiesService.findByAutoComplete(name);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una compañía por ID' })
   @ApiParam({ name: 'id', description: 'ID de la compañía' })

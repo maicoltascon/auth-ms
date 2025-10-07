@@ -18,6 +18,7 @@ export interface Company extends Document {
     dateCreated?: string;
     hourCreated?: string;
     dateModified?: string;
+    
     hourModified?: string;
     idUserModified?: string;
 
@@ -29,7 +30,7 @@ export const CompanySchema = new Schema({
     modified: { type: Date, default: Date.now },
     name: { type: String, required: true, unique: true },
     legalRepresentative: { type: String },
-    ruc: { type: String, unique: true, sparse: true },
+    rut: { type: String, unique: true, sparse: true },
     address: { type: String },
     phone: { type: String },
     email: { type: String },

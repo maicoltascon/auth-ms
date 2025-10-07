@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { Login } from './dto/auth.dto';
+import { ChangePassword, Login } from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UserPayload } from 'src/core/interfaces/user-payload.interface';
 import { AuthGuard } from '@nestjs/passport';
@@ -149,5 +149,29 @@ export class AuthController {
         valid: true,
       },
     };
+  }
+
+  @Post('change-password')
+  @ApiOperation({ summary: 'Cambiar contraseña' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cambio de contraseña exitoso',
+    schema: {
+      example: {
+        message: 'change password successful',
+        statusCode: 200,
+        status: 'Success',
+        data: 'Nombre de usuario',
+        meta: {
+          totalData: 1,
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
+  @ApiResponse({ status: 400, description: 'Error al cambiar contraseña' })
+  @ApiBody({ type: ChangePassword })
+  changePassword(@Body() changePassword: ChangePassword) {    
+    return this.authService.changePassword(changePassword);
   }
 }
