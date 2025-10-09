@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -8,39 +12,52 @@ import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>, private readonly mailService: MailService) {}
+  constructor(
+    @InjectModel('User') private readonly userModel: Model<User>,
+    private readonly mailService: MailService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
-    
-    const newUser = new this.userModel(createUserDto);
-    const result = await newUser.save();
-    if (!result) {
-      throw new NotFoundException('User not created');
-    }
+    try {
+      const newUser = new this.userModel(createUserDto);
+      const result = await newUser.save();
+      if (!result) {
+        throw new NotFoundException('User not created');
+      }
 
-   const info = await this.mailService.sendEmail({
-      to: result.email,
-      subject: 'Bienvenido a [Tu Plataforma]',
-      template: 'welcome', // nombre del archivo welcome.hbs
-      context: {
-        username: result.email,
-        password: createUserDto.password, // si tienes la contraseña original aquí (revisar seguridad)
-        login_url: 'https://tuplataforma.com/login', // url de login real de tu app
-      },
-      
-    });
-    return {
-      message: 'User created successfully',
-      statusCode: 201,
-      status: 'Success',
-      data: result,
-      meta: {
-        totalData: 1,
-        createdAt: new Date().toISOString(),
-        id: result._id,
-        info
-      },
-    };
+      const info = await this.mailService.sendEmail({
+        to: result.email,
+        subject: 'Bienvenido a BpoNet',
+        template: 'welcome', // nombre del archivo welcome.hbs
+        context: {
+          name: result.name,
+          platform_name: 'BpoNet',
+          username: result.email,
+          password: createUserDto.password, // si tienes la contraseña original aquí (revisar seguridad)
+          login_url: 'http://localhost/login', // url de login real de tu app
+        },
+      });
+      return {
+        message: 'User created successfully',
+        statusCode: 201,
+        status: 'Success',
+        data: result,
+        meta: {
+          totalData: 1,
+          createdAt: new Date().toISOString(),
+          id: result._id,
+          info,
+        },
+      };
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          'Duplicate key error: User already exists ' +
+            JSON.stringify(error.keyValue),
+        );
+      }
+      throw new BadRequestException('Error creating user: ' + error.message);
+    }
   }
 
   async findAll() {
@@ -139,8 +156,6 @@ export class UsersService {
 
   // Búsqueda simple por ID
   async findOne(id: string) {
-
-
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -200,23 +215,33 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const updatedUser = await this.userModel
-      .findByIdAndUpdate(id, updateUserDto, { new: true })
-      .exec();
-    if (!updatedUser) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+    try {
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .exec();
+      if (!updatedUser) {
+        throw new NotFoundException(`User with ID ${id} not found`);
+      }
+      return {
+        message: 'User updated successfully',
+        statusCode: 200,
+        status: 'Success',
+        data: updatedUser,
+        meta: {
+          totalData: 1,
+          updatedAt: new Date().toISOString(),
+          id: updatedUser._id,
+        },
+      };
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          'Duplicate key error: User already exists ' +
+            JSON.stringify(error.keyValue),
+        );
+      }
+      throw new BadRequestException('Error creating user: ' + error.message);
     }
-    return {
-      message: 'User updated successfully',
-      statusCode: 200,
-      status: 'Success',
-      data: updatedUser,
-      meta: {
-        totalData: 1,
-        updatedAt: new Date().toISOString(),
-        id: updatedUser._id,
-      },
-    };
   }
 
   async remove(id: string) {

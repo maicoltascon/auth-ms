@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Bienvenido a [Tu Plataforma]</title>
+  <title>Bienvenido a {{platform_name}}</title>
   <style>
-    /* Estilos básicos compatibles con la mayoría de clientes de correo */
     body {
       margin: 0;
       padding: 0;
       background-color: #f4f7fb;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
       color: #0f1724;
+      overflow-x: hidden;
     }
     table { border-collapse: collapse; width: 100%; }
     .wrapper {
       width: 100%;
-      table-layout: fixed;
       padding: 24px 16px;
+      max-width: 100%;
     }
     .container {
       max-width: 600px;
@@ -29,20 +29,20 @@
     }
     .header {
       padding: 28px 32px;
-      background: #60a5fa;
+      background: #2563eb;
       color: #f7fafc;
       text-align: center;
     }
     .logo {
       display: inline-block;
-      width: 64px;
+      width: 200px;
       height: 64px;
       border-radius: 12px;
       background: rgba(255,255,255,0.3);
       line-height: 64px;
       font-weight: 700;
       font-size: 20px;
-      color: #023047;
+      color: #ffffff;
       margin-bottom: 8px;
     }
     .title {
@@ -80,9 +80,22 @@
       display: block;
       margin-bottom: 18px;
     }
-    .cred-row { margin: 8px 0; }
-    .label { display:inline-block; width: 86px; opacity: 0.75; font-weight:600; }
-    .value { color: #0b3b4a; font-weight:700; }
+    .cred-row {
+      margin: 8px 0;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .label {
+      display: inline-block;
+      width: 90px;
+      opacity: 0.75;
+      font-weight: 600;
+    }
+    .value {
+      color: #0b3b4a;
+      font-weight: 700;
+    }
     .btn-wrap { text-align: center; margin: 18px 0; }
     .btn {
       display: inline-block;
@@ -108,10 +121,23 @@
       background: #fbfdff;
     }
 
-    /* Responsive */
     @media (max-width: 420px) {
-      .header, .content, .footer { padding-left: 18px; padding-right: 18px; }
-      .logo { width: 56px; height: 56px; line-height: 56px; font-size: 18px; }
+      .header, .content, .footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      .logo {
+        width: 56px;
+        height: 56px;
+        line-height: 56px;
+        font-size: 18px;
+      }
+      .cred-row {
+        flex-direction: column;
+        align-items: flex-start;
+        white-space: normal;
+      }
+      .label { width: auto; margin-bottom: 4px; }
     }
   </style>
 </head>
@@ -119,25 +145,25 @@
   <center class="wrapper">
     <table class="container" role="presentation" cellpadding="0" cellspacing="0">
       <tr>
-        <td class="header" aria-hidden="true">
-          <div class="logo" aria-hidden="true">BPOnet</div>
-          <h1 class="title">¡Bienvenido a [Tu Plataforma]!</h1>
+        <td class="header">
+          <div class="logo">BpoNet</div>
+          <h1 class="title">¡Bienvenido a {{platform_name}}!</h1>
           <p class="subtitle">Tu espacio para gestionar, crear y crecer.</p>
         </td>
       </tr>
 
       <tr>
         <td class="content">
-          <p class="greeting">Hola <strong>{{username}}</strong>,</p>
-
+          <p class="greeting">Hola <strong>{{name}}</strong>,</p>
+ 
           <p class="text">
-            Gracias por unirte a <strong>[Tu Plataforma]</strong>. Ya tienes acceso y a continuación te compartimos las credenciales para iniciar sesión.
+            Gracias por unirte a <strong>{{platform_name}}</strong>. Ya tienes acceso y a continuación te compartimos las credenciales para iniciar sesión.
             Te recomendamos cambiar tu contraseña la primera vez que ingreses.
           </p>
 
-          <div class="credentials" role="region" aria-label="Credenciales de inicio de sesión">
-            <div class="cred-row"><span class="label">Usuario:</span><span class="value">{{username}}</span></div>
-            <div class="cred-row"><span class="label">Contraseña:</span><span class="value">{{password}}</span></div>
+          <div class="credentials">
+            <div class="cred-row"><span class="label">Usuario:</span> <span class="value"> {{username}}</span></div>
+            <div class="cred-row"><span class="label">Contraseña:</span> <span class="value"> {{password}}</span></div>
           </div>
 
           <div class="btn-wrap">
@@ -145,7 +171,8 @@
           </div>
 
           <p class="note">
-            Si no solicitaste esta cuenta, ignora este correo o contacta soporte en <a href="mailto:soporte@tuplataforma.com">soporte@tuplataforma.com</a>.
+            Si no solicitaste esta cuenta, ignora este correo o contacta soporte en 
+            <a href="mailto:soporte@tuplataforma.com">soporte@bponet.com.co</a>.  
             Por seguridad, evita compartir tus credenciales con otras personas.
           </p>
         </td>
@@ -154,15 +181,10 @@
       <tr>
         <td class="footer">
           <div>© <span id="year">2025</span> BpoNet. Todos los derechos reservados.</div>
-          <div style="margin-top:6px;">¿Necesitas ayuda? <a href="mailto:soporte@tuplataforma.com">soporte@tuplataforma.com</a></div>
+          <div style="margin-top:6px;">¿Necesitas ayuda? <a href="mailto:soporte@tuplataforma.com">soporte@bponet.com.co</a></div>
         </td>
       </tr>
     </table>
   </center>
-
-  <!-- Small script para actualizar año en clientes que permiten JS (no todos) -->
-  <script>
-    try { document.getElementById('year').textContent = new Date().getFullYear(); } catch(e) {}
-  </script>
 </body>
 </html>

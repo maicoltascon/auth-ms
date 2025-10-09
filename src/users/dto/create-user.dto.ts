@@ -46,6 +46,9 @@ export class CreateUserDto {
   @ApiProperty({ example: false, description: 'Indica si el usuario es administrador' })
   isAdmin: boolean;
 
+  @ApiProperty({ example: false, description: 'Indica si el usuario es super usuario administrador' })
+  isSuperAdmin: boolean;
+
   @ApiProperty({ example: true, description: 'Indica si es un usuario nuevo' })
   isNewUser: boolean;
 

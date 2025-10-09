@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "postbuild": "cp -r src/mail/templates dist/mail/templates",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch && cp -r src/mail/templates dist/mail/templates",
@@ -33,6 +34,7 @@
     "@nestjs/swagger": "^11.2.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.1",
+    "generate-password": "^1.7.1",
     "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",

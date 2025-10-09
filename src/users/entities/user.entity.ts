@@ -18,6 +18,7 @@ export interface User extends Document {
   isActived: boolean;
   isAdmin: boolean;
   isNewUser: boolean;
+  isSuperAdmin: boolean;
   company: string;
   passwordResetToken: string;
   passwordResetExpires: Date;

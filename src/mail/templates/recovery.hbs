@@ -28,20 +28,20 @@
     }
     .header {
       padding: 28px 32px;
-      background: linear-gradient(135deg,#6ee7b7 0%,#60a5fa 100%);
-      color: #06202b;
+      background: #5263eb;
+      color: #f4f7fb;
       text-align: center;
     }
-    .logo {
+     .logo {
       display: inline-block;
-      width: 64px;
+      width: 200px;
       height: 64px;
       border-radius: 12px;
       background: rgba(255,255,255,0.3);
       line-height: 64px;
       font-weight: 700;
       font-size: 20px;
-      color: #023047;
+      color: #ffffff;
       margin-bottom: 8px;
     }
     .title {
@@ -92,7 +92,7 @@
       font-weight: 700;
       font-size: 15px;
       letter-spacing: 0.2px;
-      background: linear-gradient(90deg,#0ea5b7,#2563eb);
+      background: #5263eb;
       color: #fff !important;
     }
     .note {
@@ -119,7 +119,7 @@
     <table class="container" role="presentation" cellpadding="0" cellspacing="0">
       <tr>
         <td class="header">
-          <div class="logo">TP</div>
+          <div class="logo">BpoNet</div>
           <h1 class="title">Recuperación de contraseña</h1>
           <p class="subtitle">Te ayudamos a acceder nuevamente a tu cuenta</p>
         </td>
@@ -127,10 +127,10 @@
 
       <tr>
         <td class="content">
-          <p class="greeting">Hola <strong>{{username}}</strong>,</p>
+          <p class="greeting">Hola <strong>{{name}}</strong>,</p>
 
           <p class="text">
-            Has solicitado restablecer tu contraseña de acceso en <strong>[Tu Plataforma]</strong>.
+            Has solicitado restablecer tu contraseña de acceso en <strong>{{platform_name}}</strong>.
             A continuación encontrarás tu <strong>contraseña temporal</strong>.  
             Te recomendamos cambiarla después de iniciar sesión.
           </p>
@@ -142,16 +142,16 @@
           </div>
 
           <p class="note">
-            Si no solicitaste este restablecimiento, ignora este mensaje.  
-            Por motivos de seguridad, la contraseña temporal expirará en <strong>24 horas</strong>.
+            Si no solicitaste este restablecimiento, comunicate con soporte.  
+            Por motivos de seguridad, cambia la contraseña temporal despues de iniciar sesión.
           </p>
         </td>
       </tr>
 
       <tr>
         <td class="footer">
-          <div>© <span id="year">2025</span> [Tu Plataforma]. Todos los derechos reservados.</div>
-          <div style="margin-top:6px;">¿Necesitas ayuda? <a href="mailto:soporte@tuplataforma.com">soporte@tuplataforma.com</a></div>
+          <div>© <span id="year">2025</span> {{platform_name}}. Todos los derechos reservados.</div>
+          <div style="margin-top:6px;">¿Necesitas ayuda? <a href="mailto:soporte@bponet.com.co">soporte@bponet.com.co</a></div>
         </td>
       </tr>
     </table>

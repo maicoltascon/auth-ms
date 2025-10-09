@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 interface SendEmailOptions {
   to: string;
@@ -11,15 +12,16 @@ interface SendEmailOptions {
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(private readonly mailerService: MailerService, private readonly configService: ConfigService) {}
 
   async sendEmail(options: SendEmailOptions): Promise<void> {
+    
     return await this.mailerService.sendMail({
       to: options.to,
       subject: options.subject,
       template: options.template, // nombre de la plantilla .hbs sin extensión
       context: options.context || {},
-      from: options.from,
+      from: this.configService.get<string>('EMAIL_USERNAME'),
       headers: {
         'X-Priority': '3',
         Importance: 'normal',

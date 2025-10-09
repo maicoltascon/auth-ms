@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { ChangePassword, Login } from './dto/auth.dto';
+import { ChangePassword, Login, RecoveryPassword } from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UserPayload } from 'src/core/interfaces/user-payload.interface';
 import { AuthGuard } from '@nestjs/passport';
@@ -51,6 +51,30 @@ export class AuthController {
   @ApiBody({ type: Login })
   login(@Body() login: Login) {
     return this.authService.login(login);
+  }
+
+  @Post('change-password')
+  @ApiOperation({ summary: 'Cambiar contraseña' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cambio de contraseña exitoso',
+    schema: {
+      example: {
+        message: 'change password successful',
+        statusCode: 200,
+        status: 'Success',
+        data: 'Nombre de usuario',
+        meta: {
+          totalData: 1,
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
+  @ApiResponse({ status: 400, description: 'Error al cambiar contraseña' })
+  @ApiBody({ type: ChangePassword })
+  changePassword(@Body() changePassword: ChangePassword) {    
+    return this.authService.changePassword(changePassword);
   }
 
   @Get('validate-user')
@@ -132,6 +156,36 @@ export class AuthController {
     };
   }
 
+
+  @Post('recovery-password')
+  @ApiOperation({ summary: 'Recuperar contraseña' })
+  @ApiResponse({
+    status: 200,
+    description: 'Recuperación de contraseña exitoso',
+    schema: {
+      example: {
+        message: 'recovery password successful',
+        statusCode: 200,
+        status: 'Success',
+        data: 'Nombre de usuario',
+        meta: {
+          totalData: 1,
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  @ApiResponse({ status: 500, description: 'Error al actualizar contraseña' })
+  @ApiBody({ type: RecoveryPassword })
+  recoveryPassword(@Body() recoveryPassword: RecoveryPassword) {    
+    console.log('recoveryPassword', recoveryPassword);
+    
+    return this.authService.recoveryPassword(recoveryPassword);
+  }
+
+
+
+
   // Endpoint de microservicio (no documentado por Swagger)
   @MessagePattern({ cmd: 'login' })
   msLogin(@Payload() login: Login) {
@@ -151,27 +205,5 @@ export class AuthController {
     };
   }
 
-  @Post('change-password')
-  @ApiOperation({ summary: 'Cambiar contraseña' })
-  @ApiResponse({
-    status: 200,
-    description: 'Cambio de contraseña exitoso',
-    schema: {
-      example: {
-        message: 'change password successful',
-        statusCode: 200,
-        status: 'Success',
-        data: 'Nombre de usuario',
-        meta: {
-          totalData: 1,
-        },
-      },
-    },
-  })
-  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
-  @ApiResponse({ status: 400, description: 'Error al cambiar contraseña' })
-  @ApiBody({ type: ChangePassword })
-  changePassword(@Body() changePassword: ChangePassword) {    
-    return this.authService.changePassword(changePassword);
-  }
+  
 }
